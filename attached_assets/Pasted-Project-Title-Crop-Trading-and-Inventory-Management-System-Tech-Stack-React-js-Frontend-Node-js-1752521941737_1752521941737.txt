@@ -1,0 +1,140 @@
+Project Title: Crop Trading and Inventory Management System
+Tech Stack: React.js (Frontend), Node.js with Express.js (Backend), MySQL (Database), JWT for authentication
+
+1. Introduction
+1.1. Purpose
+This system enables users (typically agents or businesses) to buy crops from farmers, sell them to traders, and manage inventory, sales, and expenses. It includes masters for managing parties, cities, states, crops, and also handles ledger accounting.
+
+1.2. Scope
+User Authentication with JWT
+
+Crop Purchase and Sale Management
+
+Party Master (Farmer, Trader, etc.)
+
+Inventory Management
+
+Ledger Management
+
+Reporting (Daily, Weekly, Custom Filters)
+
+Expense Management
+
+Dashboard with Analytics
+
+Export to PDF and Excel
+
+2. Overall Description
+2.1. Users
+Admin: Full access to all features.
+
+Operator/User: Can perform transactions, view reports, and manage inventory.
+
+2.2. Assumptions and Dependencies
+MySQL Server must be available.
+
+JWT used for stateless authentication.
+
+Node.js backend will serve RESTful APIs.
+
+React frontend will consume APIs securely using JWT.
+
+3. System Features
+3.1. Authentication (Login/Logout)
+JWT-based login and token-based session.
+
+Role-based access (admin/operator).
+
+3.2. Master Modules
+Party Master: Name, Type (Farmer/Trader), Contact, City, State.
+
+City Master
+
+State Master
+
+Crops Master: Crop name, unit (kg/quintal), base price.
+
+3.3. Purchase Module (From Farmer)
+Select Party (Farmer)
+
+Select Crop, Quantity, Rate
+
+Automatically update inventory (Add to stock)
+
+Enter Expenses (e.g., transport, labor)
+
+3.4. Sales Module (To Trader)
+Select Party (Trader)
+
+Select Crop, Quantity, Rate
+
+Automatically deduct from inventory (Reduce stock)
+
+Add related expenses
+
+3.5. Inventory Management
+Real-time crop stock tracking
+
+Opening stock, purchase additions, sale reductions
+
+3.6. Ledger Management
+Auto-calculated based on purchase/sale and expenses
+
+Track outstanding payments per party
+
+3.7. Expense Management
+Add/View expenses (transport, labor, etc.)
+
+Linkable to transactions
+
+3.8. Reporting
+Daily/Weekly/Custom Reports
+
+Sales Summary
+
+Purchase Summary
+
+Stock Summary
+
+Profit & Loss
+
+Filters: Party, Crop, Date Range, City/State
+
+Export: PDF, Excel
+
+3.9. Dashboard
+Total Sales, Total Purchase, Total Expenses
+
+Inventory Summary
+
+Outstanding Balances
+
+Charts for trends (daily/weekly/monthly)
+
+4. Non-Functional Requirements
+4.1. Performance
+Handle concurrent users (e.g., 100+ users)
+
+Fast API responses (< 1s typical)
+
+4.2. Security
+JWT for secure API access
+
+Password hashing (bcrypt)
+
+Input validation (backend & frontend)
+
+4.3. Maintainability
+Modular code (separated concerns)
+
+API documentation (Swagger/OpenAPI)
+
+5. Technical Stack
+Component	Technology
+Frontend	React.js, Axios, Bootstrap/Material UI
+Backend	Node.js, Express.js
+Database	MySQL
+Auth	JWT (jsonwebtoken)
+File Export	jsPDF, SheetJS (xlsx)
+Reporting	Chart.js / Recharts
+ORM	Sequelize / Knex.js (optional)
