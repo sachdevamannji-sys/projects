@@ -49,7 +49,7 @@ export default function Sidebar() {
           <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold">🌱</span>
           </div>
-          <span className="text-xl font-semibold text-slate-800">CropSystem</span>
+          <span className="text-xl font-semibold text-slate-800">KCAgri-Trade</span>
         </div>
       </div>
       
