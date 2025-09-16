@@ -43,7 +43,7 @@ export default function Login() {
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">🌱</span>
             </div>
-            <CardTitle className="text-2xl font-semibold text-slate-800">CropSystem</CardTitle>
+            <CardTitle className="text-2xl font-semibold text-slate-800">KCAgri-Trade</CardTitle>
           </div>
           <p className="text-slate-600">Sign in to your account</p>
         </CardHeader>
@@ -58,7 +58,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@cropsystem.com"
+                placeholder="admin@kcagri-trade.com"
                 required
                 className="w-full"
               />
@@ -86,9 +86,9 @@ export default function Login() {
                   Remember me
                 </Label>
               </div>
-              <Button variant="link" className="text-sm text-primary-600 hover:text-primary-700">
+              {/* <Button variant="link" className="text-sm text-primary-600 hover:text-primary-700">
                 Forgot password?
-              </Button>
+              </Button> */}
             </div>
             
             <Button
@@ -100,9 +100,9 @@ export default function Login() {
             </Button>
           </form>
           
-          <div className="mt-6 text-center text-sm text-slate-600">
+          {/* <div className="mt-6 text-center text-sm text-slate-600">
             Demo Credentials: admin@cropsystem.com / password
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
