@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(async ({ mode }) => {
   const plugins = [react(), runtimeErrorOverlay()];
 
-  // Add Replit cartographer plugin in non-production Replit environments
+  // Add Replit plugin only in dev + Replit environment
   if (mode !== "production" && process.env.REPL_ID) {
     const cartographer = await import("@replit/vite-plugin-cartographer").then(
       (m) => m.cartographer()
@@ -21,7 +21,7 @@ export default defineConfig(async ({ mode }) => {
 
   return {
     plugins,
-    root: path.resolve(__dirname, "client"),
+    root: path.resolve(__dirname, "client"), // client source folder
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "client/src"),
@@ -30,7 +30,7 @@ export default defineConfig(async ({ mode }) => {
       },
     },
     build: {
-      outDir: path.resolve(__dirname, "dist/public"),
+      outDir: path.resolve(__dirname, "dist/public"), // production build output
       emptyOutDir: true,
     },
     server: {
