@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,11 +14,11 @@ app.use(express.urlencoded({ extended: false }));
 
 const PORT = process.env.PORT || 10000;
 
-// logging middleware for API requests
+// Logging middleware for API requests
 app.use((req, res, next) => {
   const start = Date.now();
-  const requestPath = req.path; // renamed to avoid shadowing
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  const requestPath = req.path; // avoid shadowing
+  let capturedJsonResponse: Record<string, any> | undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -29,12 +30,8 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (requestPath.startsWith("/api")) {
       let logLine = `${req.method} ${requestPath} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
+      if (capturedJsonResponse) logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      if (logLine.length > 80) logLine = logLine.slice(0, 79) + "…";
       log(logLine);
     }
   });
@@ -45,35 +42,38 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // global error handler
+  // Global error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
     res.status(status).json({ message });
     log(`❌ Error: ${message}`);
   });
 
   if (app.get("env") === "development") {
-    // dev mode: use Vite with hot reload
+    // Dev mode: Vite hot reload
     await setupVite(app, server);
   } else {
-    // production: serve client build
-    const clientPath = path.join(__dirname, "../../public"); 
-    // ../../public because __dirname = dist/server
+    // Production: serve client build from dist/public
+    const clientPath = path.resolve(__dirname, "../../public"); // __dirname = dist/server
+
+    if (!fs.existsSync(clientPath)) {
+      log(`❌ Client build not found at ${clientPath}`);
+      process.exit(1);
+    }
 
     app.use(express.static(clientPath));
 
-    // fallback for SPA routing
+    // SPA fallback
     app.get("*", (_, res) => {
       res.sendFile(path.join(clientPath, "index.html"));
     });
 
-    // if serveStatic does extra work (headers, compression, etc.), keep it
-    serveStatic(app);
+    // Updated serveStatic: now points to correct public folder
+    serveStatic(app, clientPath);
   }
 
-  // start server
+  // Start server
   server.listen(PORT, "0.0.0.0", () => {
     log(`🚀 Serving on http://0.0.0.0:${PORT}`);
   });
