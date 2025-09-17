@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, log } from "./vite"; // Removed serveStatic
+import { setupVite, log } from "./vite"; // no serveStatic
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 const PORT = process.env.PORT || 10000;
 
-// Logging middleware for API requests
+// Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const requestPath = req.path;
@@ -54,24 +54,25 @@ app.use((req, res, next) => {
     // Dev mode: Vite hot reload
     await setupVite(app, server);
   } else {
-    // Production: serve client build from dist/public
-    const clientPath = path.resolve(__dirname, "../../public"); // __dirname = dist/server
+    // Production: check if client build exists
+    const clientPath = path.resolve(__dirname, "../../public");
 
-    if (!fs.existsSync(clientPath)) {
-      log(`❌ Client build not found at ${clientPath}`);
-      process.exit(1);
+    if (fs.existsSync(clientPath)) {
+      app.use(express.static(clientPath));
+
+      // SPA fallback
+      app.get("*", (_, res) => {
+        res.sendFile(path.join(clientPath, "index.html"));
+      });
+
+      log(`✅ Client build found. Serving static files from ${clientPath}`);
+    } else {
+      log(`⚠️ Client build not found at ${clientPath}. Server will run APIs only.`);
     }
-
-    app.use(express.static(clientPath));
-
-    // SPA fallback
-    app.get("*", (_, res) => {
-      res.sendFile(path.join(clientPath, "index.html"));
-    });
   }
 
   // Start server
   server.listen(PORT, "0.0.0.0", () => {
-    log(`🚀 Serving on http://0.0.0.0:${PORT}`);
+    log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   });
 })();
