@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(express.static(path.join(__dirname, "../dist/public")));
 const PORT = process.env.PORT || 10000;
 
 // Logging middleware
@@ -70,7 +70,9 @@ app.use((req, res, next) => {
       log(`⚠️ Client build not found at ${clientPath}. Server will run APIs only.`);
     }
   }
-
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/public", "index.html"));
+});
   // Start server
   server.listen(PORT, "0.0.0.0", () => {
     log(`🚀 Server running on http://0.0.0.0:${PORT}`);
