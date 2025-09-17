@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, log } from "./vite"; // Removed serveStatic
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 10000;
 // Logging middleware for API requests
 app.use((req, res, next) => {
   const start = Date.now();
-  const requestPath = req.path; // avoid shadowing
+  const requestPath = req.path;
   let capturedJsonResponse: Record<string, any> | undefined;
 
   const originalResJson = res.json;
@@ -68,9 +68,6 @@ app.use((req, res, next) => {
     app.get("*", (_, res) => {
       res.sendFile(path.join(clientPath, "index.html"));
     });
-
-    // Updated serveStatic: now points to correct public folder
-    serveStatic(app, clientPath);
   }
 
   // Start server
