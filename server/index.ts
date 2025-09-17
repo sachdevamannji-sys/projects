@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 10000;
 // logging middleware for API requests
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const requestPath = req.path; // renamed to avoid shadowing
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
@@ -27,8 +27,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (requestPath.startsWith("/api")) {
+      let logLine = `${req.method} ${requestPath} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // error handler
+  // global error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -55,18 +55,21 @@ app.use((req, res, next) => {
   });
 
   if (app.get("env") === "development") {
-    // in dev mode, run Vite for hot reload
+    // dev mode: use Vite with hot reload
     await setupVite(app, server);
   } else {
-    // in production, serve from dist/public
-    const clientPath = path.join(__dirname, "../public");
+    // production: serve client build
+    const clientPath = path.join(__dirname, "../../public"); 
+    // ../../public because __dirname = dist/server
+
     app.use(express.static(clientPath));
 
-    // fallback to index.html for SPA
+    // fallback for SPA routing
     app.get("*", (_, res) => {
       res.sendFile(path.join(clientPath, "index.html"));
     });
 
+    // if serveStatic does extra work (headers, compression, etc.), keep it
     serveStatic(app);
   }
 
