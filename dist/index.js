@@ -1197,7 +1197,7 @@ var vite_config_default = defineConfig({
   },
   root: path2.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path2.resolve(import.meta.dirname, "dist/public"),
+    outDir: path2.resolve(import.meta.dirname, "./public"),
     emptyOutDir: true
   },
   server: {
